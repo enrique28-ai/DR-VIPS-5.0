@@ -56,45 +56,34 @@ function ConflictNote({ fieldLabel, wrapper, t }) {
   );
 }
 
-function ScalarHistory({ label, wrapper, formatter, t }) {
+function ScalarHistory({ label, wrapper, formatter, t, useMetric, isHeight, isWeight }) {
   if (!wrapper || !Array.isArray(wrapper.alternatives) || wrapper.alternatives.length < 2) {
     return null;
   }
 
-  const format =
-    formatter ||
-    ((v) => {
-      if (v === null || v === undefined || v === "") return t("myHealthInfo.common.notSpecified");
-      return String(v);
-    });
-
   const cur = wrapper.value ?? null;
-  const prevList = wrapper.alternatives.slice(1);
-  if (!prevList.length) return null;
+  
+  // Filtrar duplicados y el valor actual
+  const prevList = [...new Set(wrapper.alternatives.slice(1))].filter((v) => {
+    if (v === null || v === undefined || v === "") return false;
+    
+    // Si es un número (estatura o peso), comparamos con tolerancia para evitar 
+    // que aparezca como "cambio" al alternar entre métrico/imperial
+    if (typeof v === 'number' && typeof cur === 'number' && (isHeight || isWeight)) {
+      const diff = Math.abs(v - cur);
+      // Tolerancia de 0.001 para evitar diferencias por redondeo
+      return diff > 0.001;
+    }
+    
+    return v !== cur;
+  });
+
+  if (prevList.length === 0) return null;
 
   const labelText = label
     ? t("myHealthInfo.common.previouslyRecorded", { label: label.toLowerCase() })
     : t("myHealthInfo.common.previouslyRecordedGeneric");
 
-  // Si solo hay 1 previo, muestro prev → cur (se ve consistente en 1 o varios doctores)
-  /*if (prevList.length === 1) {
-    const prev = prevList[0];
-    return (
-      <div className="mt-1 text-xs text-slate-600">
-        <p>
-          {labelText}{" "}
-          <span className="font-medium">{format(prev)}</span>
-          {cur !== null && cur !== undefined && cur !== "" ? (
-            <>
-              {" "}→ <span className="font-medium">{format(cur)}</span>
-            </>
-          ) : null}
-        </p>
-      </div>
-    );
-  }*/
-
-  // Si hay varios previos, muestro lista (como ya lo hacías)
   return (
     <div className="mt-1 text-xs text-slate-600">
       <p>
@@ -103,7 +92,7 @@ function ScalarHistory({ label, wrapper, formatter, t }) {
           {prevList.map((v, idx) => (
             <span key={idx}>
               {idx > 0 ? ", " : ""}
-              {format(v)}
+              {formatter ? formatter(v) : String(v)}
             </span>
           ))}
         </span>
@@ -111,7 +100,6 @@ function ScalarHistory({ label, wrapper, formatter, t }) {
     </div>
   );
 }
-
 
 
 function ChipList({ items, t }) {
@@ -701,17 +689,18 @@ const prevLocations =
                 </p>
                 <p>{heightDisplay}</p>
                 <ScalarHistory
-                  label={t("myHealthInfo.sections.anthropometrics.height")}
-                  wrapper={heightWrapper}
-                  t={t}
-                  formatter={(v) => {
-                    if (typeof v !== "number")
-                      return t("myHealthInfo.common.notSpecified");
-                    return useMetric
-                      ? `${v.toFixed(2)} m`
-                      : `${(v / 0.3048).toFixed(2)} ft`;
-                  }}
-                />
+                label={t("myHealthInfo.sections.anthropometrics.height")}
+                wrapper={heightWrapper}
+                t={t}
+                useMetric={useMetric}
+                isHeight={true} // <--- Añadir esto
+                formatter={(v) => {
+                if (typeof v !== "number") return t("myHealthInfo.common.notSpecified");
+                return useMetric
+              ? `${v.toFixed(2)} m`
+              : `${(v / 0.3048).toFixed(2)} ft`;
+               }}
+            />
                 <ConflictNote
                   fieldLabel={t("myHealthInfo.sections.anthropometrics.height")}
                   wrapper={heightWrapper || heightConflict}
@@ -729,14 +718,15 @@ const prevLocations =
                   label={t("myHealthInfo.sections.anthropometrics.weight")}
                   wrapper={weightWrapper}
                   t={t}
+                  useMetric={useMetric}
+                  isWeight={true} // <--- Añadir esto
                   formatter={(v) => {
-                    if (typeof v !== "number")
-                      return t("myHealthInfo.common.notSpecified");
-                    return useMetric
-                      ? `${v.toFixed(1)} kg`
-                      : `${(v / 0.45359237).toFixed(1)} lb`;
-                  }}
-                />
+                  if (typeof v !== "number") return t("myHealthInfo.common.notSpecified");
+                return useMetric
+                ? `${v.toFixed(1)} kg`
+                : `${(v / 0.45359237).toFixed(1)} lb`;
+              }}
+          />
                 <ConflictNote
                   fieldLabel={t("myHealthInfo.sections.anthropometrics.weight")}
                   wrapper={weightWrapper || weightConflict}
