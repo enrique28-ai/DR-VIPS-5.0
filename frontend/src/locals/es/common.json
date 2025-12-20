@@ -116,6 +116,7 @@
       "dangerDoctor": "Al borrar su cuenta, se eliminará permanentemente su perfil y todos los registros que haya creado (pacientes y diagnósticos).",
       "confirmPlaceholder": "Escribe \"BORRAR\" para confirmar",
       "deleteButton": "Eliminar mi cuenta",
+      "deleteConfirmValue": "BORRAR",
       "errors": {
         "confirmDelete": "Escribe \"BORRAR\" para confirmar",
         "maxSize": "Máximo 2 MB"

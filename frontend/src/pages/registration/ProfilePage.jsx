@@ -67,10 +67,12 @@ export default function ProfilePage() {
   };
 
   const onDelete = async () => {
-    if (confirmText !== "DELETE") {
-      toast.error(t("auth.profile.errors.confirmDelete"));
-      return;
-    }
+    const requiredWord = t("auth.profile.deleteConfirmValue");
+
+  if (confirmText !== requiredWord) {
+    toast.error(t("auth.profile.errors.confirmDelete"));
+    return;
+  }
     setIsDeleting(true);
     try {
       await deleteMe();

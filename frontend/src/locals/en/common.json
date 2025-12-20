@@ -116,6 +116,7 @@
       "dangerDoctor": "Deleting your account will permanently remove your profile and all records you created (patients and diagnoses).",
       "confirmPlaceholder": "Type \"DELETE\" to confirm",
       "deleteButton": "Delete my account",
+      "deleteConfirmValue": "DELETE",
       "errors": {
         "confirmDelete": "Type \"DELETE\" to confirm",
         "maxSize": "Max 2MB"
