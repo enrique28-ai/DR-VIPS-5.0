@@ -21,7 +21,7 @@ const GoogleIcon = (props) => (
 
 
 export default function LoginPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login, isLoading, googleStart } = useAuthStore();
@@ -77,6 +77,8 @@ export default function LoginPage() {
         <div className="mt-3 mb-6 flex justify-center">
           <div className="inline-block">
          <ReCAPTCHA
+          key={i18n.language} 
+          hl={i18n.language}
            ref={recaptchaRef}
            sitekey={RECAPTCHA_SITE_KEY}
            onChange={(token) => setCaptcha(token || "")}
