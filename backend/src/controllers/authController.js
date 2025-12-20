@@ -390,7 +390,7 @@ export const verifyResetCode = async (req, res) => {
     const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
 
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1h para cambiar password
+    user.resetPasswordExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 1h para cambiar password
     await user.save();
 
     return res.json({ success: true, token: rawToken });
