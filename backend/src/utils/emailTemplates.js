@@ -85,7 +85,7 @@ const COPY = {
       hi: "Hola,",
       p1: "Recibimos una solicitud para restablecer tu contraseña. Si tú no la solicitaste, puedes ignorar este correo.",
       btn: "Restablecer contraseña",
-      note: "Este codigo expira en 15 minutos.",
+      note: "Este código expira en 15 minutos.",
     },
     resetOk: {
       title: "Contraseña restablecida",
