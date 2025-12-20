@@ -1,5 +1,6 @@
 // server/emailTemplates.js
-
+import { en } from './emailLocals/en.js';
+import { es } from './emailLocals/es.js';
 // DR-VIPS palette
 const brand = {
   name: "DR-VIPS",
@@ -14,100 +15,12 @@ const brand = {
   border: "rgba(255,255,255,0.08)",
 };
 
+const COPY = { en, es };
+
 const normalizeLang = (lang = "en") => {
   const l = String(lang || "en").toLowerCase();
   const short = l.split(",")[0].trim().split("-")[0].split("_")[0];
   return ["en", "es"].includes(short) ? short : "en";
-};
-
-const COPY = {
-  en: {
-    footer: "This is an automated message. Please don’t reply to this email.",
-    subjects: {
-      verify: "Verify your account",
-      welcome: "Welcome to DR-VIPS",
-      resetReq: "Reset your password",
-      resetOk: "Password Reset Successful",
-    },
-    verify: {
-      title: "Verify your account",
-      hi: "Hi,",
-      codeLabel: "Your verification code is:",
-      instructions: "Enter this code to complete your registration. The code expires in 15 minutes.",
-      ignore: "If you didn’t create this account, you can safely ignore this message.",
-    },
-    resetReq: {
-      title: "Reset your password",
-      hi: "Hi,",
-      p1: "We received a request to reset your password. If you didn’t request this, you can ignore this email.",
-      btn: "Reset password",
-      note: "This code expires in 15 minutes.",
-    },
-    resetOk: {
-      title: "Password reset successful",
-      hi: "Hi,",
-      p1: "Your password has been updated successfully.",
-      p2: "If you did not make this change, please reset your password immediately.",
-    },
-    welcome: {
-      title: "Welcome to DR-VIPS",
-      p1: "We’re excited to have you on",
-      p2: "Your account is now active. You have access to a fast and modern workspace designed to optimize your daily activities.",
-      tip: "Tip: Complete your profile to personalize your experience and start exploring the platform.",
-      help: "Need help? We’re here for you.",
-    },
-    resetCode: {
-      title: "Reset your password",
-      hi: "Hi,",
-      codeLabel: "Your password reset code is:",
-      instructions: "Enter this code to continue. The code expires in 15 minutes.",
-      ignore: "If you didn’t request this, you can ignore this email.",
-    },
-  },
-
-  es: {
-    footer: "Este es un mensaje automático. Por favor no respondas a este correo.",
-    subjects: {
-      verify: "Verifica tu cuenta",
-      welcome: "Bienvenido/a a DR-VIPS",
-      resetReq: "Restablece tu contraseña",
-      resetOk: "Contraseña restablecida",
-    },
-    verify: {
-      title: "Verifica tu cuenta",
-      hi: "Hola,",
-      codeLabel: "Tu código de verificación es:",
-      instructions: "Ingresa este código para completar tu registro. El código expira en 15 minutos.",
-      ignore: "Si tú no creaste esta cuenta, puedes ignorar este mensaje.",
-    },
-    resetReq: {
-      title: "Restablece tu contraseña",
-      hi: "Hola,",
-      p1: "Recibimos una solicitud para restablecer tu contraseña. Si tú no la solicitaste, puedes ignorar este correo.",
-      btn: "Restablecer contraseña",
-      note: "Este código expira en 15 minutos.",
-    },
-    resetOk: {
-      title: "Contraseña restablecida",
-      hi: "Hola,",
-      p1: "Tu contraseña se actualizó correctamente.",
-      p2: "Si no realizaste este cambio, por favor restablece tu contraseña de inmediato.",
-    },
-    welcome: {
-      title: "Bienvenido/a a DR-VIPS",
-      p1: "Nos da gusto tenerte en",
-      p2: "Tu cuenta ya está activa. Tienes acceso a un espacio de trabajo rápido y moderno diseñado para optimizar tus actividades diarias.",
-      tip: "Tip: Completa tu perfil para personalizar tu experiencia y comenzar a explorar la plataforma.",
-      help: "¿Necesitas ayuda? Aquí estamos para ti.",
-    },
-    resetCode: {
-      title: "Restablece tu contraseña",
-      hi: "Hola,",
-      codeLabel: "Tu código para restablecer la contraseña es:",
-      instructions: "Ingresa este código para continuar. El código expira en 15 minutos.",
-      ignore: "Si tú no solicitaste esto, puedes ignorar este correo.",
-    },
-  },
 };
 
 const baseHead = `
