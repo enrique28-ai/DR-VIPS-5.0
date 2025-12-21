@@ -231,12 +231,35 @@ export const useAuthStore = create(persist((set) => ({
     }
   },
   // Nueva: valida captcha -> deja cookie -> redirige a Google
-  googleStart: async (recaptchaToken) => {
+ /* googleStart: async (recaptchaToken) => {
     try{
     await api.post(`${API}/google/recaptcha`, { recaptchaToken });
     window.location.href = `${API}/google/init`;
     } catch (err) {
       if (err?.response?.status === 429) {  rateToast(err);  throw err; }
+      toast.error(extract(err, i18n.t("auth.toasts.googleFailed")));
+      throw err;
+    }
+  },*/
+
+  // src/stores/authStore.js
+
+  googleStart: async (recaptchaToken) => {
+    try {
+      // 1. Validamos captcha (Esto usa Axios, así que API = "/auth" está bien aquí)
+      await api.post(`${API}/google/recaptcha`, { recaptchaToken });
+
+      // 2. Redirigimos al usuario (Esto NO usa Axios, así que necesitamos la ruta completa)
+      // En desarrollo va al puerto 5001, en producción va a /api
+      const backendBase = import.meta.env.MODE === "development" 
+        ? "http://localhost:5001/api" 
+        : "/api";
+
+      // Forzamos la ruta completa
+      window.location.href = `${backendBase}/auth/google/init`;
+
+    } catch (err) {
+      if (err?.response?.status === 429) { rateToast(err); throw err; }
       toast.error(extract(err, i18n.t("auth.toasts.googleFailed")));
       throw err;
     }
