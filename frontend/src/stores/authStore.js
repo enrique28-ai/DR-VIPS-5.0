@@ -1,8 +1,8 @@
 // src/stores/authStore.js
 import { create } from "zustand";
-import axios from "axios";
+import axios from "../lib/axios.js";
 import toast from "react-hot-toast";
-import { queryClient } from "../lib/queryClient";
+import { queryClient } from "../lib/queryClient.js";
 import { persist, createJSONStorage } from "zustand/middleware";
 import i18n from "../i18n"; 
 
