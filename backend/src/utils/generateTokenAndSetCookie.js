@@ -6,7 +6,7 @@ export const generateTokenAndSetCookie = (res, userId) => {
   const isProd = process.env.NODE_ENV === "production";
 
   res.cookie("token", token, {
-    httpOnly: false,
+    httpOnly: true,
     secure: isProd,                 // Render usa HTTPS → true en prod
     sameSite: "lax", // Ajuste de SameSite según el entorno
     path: "/",
