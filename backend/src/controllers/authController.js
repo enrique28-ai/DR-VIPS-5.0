@@ -424,7 +424,7 @@ export const googleInit = (req, res) => {
   const state = nanoid(24);
     res.cookie("g_state", state, {
       httpOnly:true,
-      sameSite:"lax",
+      sameSite:isProd ? "none" : "lax",
       secure:isProd,
       maxAge:10*60*1000
     });
@@ -514,7 +514,7 @@ export const googleCallback = async (req, res) => {
       { expiresIn: "10m" }
     );
     res.cookie(COOKIE_PENDING, pendingToken, {
-      httpOnly: true, sameSite: "lax", secure: isProd, maxAge: 10 * 60 * 1000, path: "/",
+      httpOnly: true, sameSite: isProd ? "none" : "lax", secure: isProd, maxAge: 10 * 60 * 1000, path: "/",
     });
     res.clearCookie("g_state");
     return res.redirect(`${backTo}/choose-role`);
@@ -650,7 +650,7 @@ export const deleteMe = async (req, res) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: isProd,
-      sameSite: "lax",
+      sameSite: isProd ? "none" : "lax",
       path: "/",
     });
 
