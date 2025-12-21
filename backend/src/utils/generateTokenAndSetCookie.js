@@ -8,7 +8,7 @@ export const generateTokenAndSetCookie = (res, userId) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: isProd,                 // Render usa HTTPS → true en prod
-    sameSite: isProd ? "none" : "lax", // Ajuste de SameSite según el entorno
+    sameSite: "lax", // Ajuste de SameSite según el entorno
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
