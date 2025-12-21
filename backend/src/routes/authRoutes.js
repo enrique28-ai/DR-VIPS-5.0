@@ -22,7 +22,7 @@ const isProd = process.env.NODE_ENV === "production";
 router.post("/google/recaptcha", authLimiter, verifyRecaptcha(), (req, res) => {
   res.cookie("g_captcha", "ok", {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: isProd ? "none" : "lax",
     secure:isProd,
     maxAge: 2 * 60 * 1000, // 2 minutos
     path: "/",
