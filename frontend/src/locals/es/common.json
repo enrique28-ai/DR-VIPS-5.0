@@ -3,6 +3,7 @@
     "title": "DR VIPS - Historias clínicas simplificadas",
     "tagline": "Todo el mundo es VIP",
     "description": {
+      "general": "Un espacio seguro y moderno para la gestión de información de salud. Los médicos optimizan sus consultas y los pacientes toman el control de su historial.",
       "patient": "Consulte los diagnósticos de todos sus médicos en un lugar seguro. Filtros sencillos e historial claro.",
       "doctor": "Gestione pacientes y diagnósticos en un panel de control limpio y seguro. Búsqueda rápida, ediciones rápidas, historial claro."
     },

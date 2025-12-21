@@ -3,6 +3,7 @@
     "title": "DR VIPS — Medical Records, Simplified",
     "tagline": "Everyone is a VIP",
     "description": {
+      "general": "A secure and modern workspace for health information management. Doctors optimize their practice while patients take control of their history.",
       "patient": "View your diagnoses from all your doctors in one secure place. Simple filters and clear history.",
       "doctor": "Manage patients and diagnoses in a clean, secure dashboard. Fast search, quick edits, clear history."
     },

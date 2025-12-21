@@ -30,8 +30,9 @@ export default function Home() {
   const ctaText = t(ctaKey);
 
   // Descripción según rol
-  const descriptionKey =
-    role === "patient"
+  const descriptionKey = !isAuthenticated
+    ? "home.description.general"
+    : role === "patient"
       ? "home.description.patient"
       : "home.description.doctor";
 
