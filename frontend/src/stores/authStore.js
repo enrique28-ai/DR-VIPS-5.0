@@ -243,7 +243,7 @@ export const useAuthStore = create(persist((set) => ({
   },
 
    // Paso intermedio: leer datos "pending" (email, foto, allowDoctor)
-  getGooglePending: async () => {
+ /* getGooglePending: async () => {
     const { data } = await axios.get(`${API}/google/pending`);
     return data; // { email, name, picture, allowDoctor }
   },
@@ -258,6 +258,47 @@ export const useAuthStore = create(persist((set) => ({
       return data.user;
     } catch (err) {
       if (err?.response?.status === 429) { rateToast(err); throw err; }
+      throw err;
+    }
+  },*/
+
+  getGooglePending: async () => {
+    try {
+      // Esta ruta recupera los datos temporales (email, nombre) guardados en la cookie g_pending
+      const { data } = await axios.get(`${API}/google/pending`);
+      return data; 
+    } catch (err) {
+      // Si falla, probablemente la cookie expiró o no existe
+      throw err;
+    }
+  },
+
+  finalizeGoogleRole: async (role) => {
+    set({ isLoading: true, error: null });
+    try {
+      // Envía el rol elegido. El backend usa la cookie g_pending para saber quién es el usuario
+      await axios.post(`${API}/google/finalize`, { role });
+
+      // Si tuvo éxito, el backend ya dejó la cookie 'token' de sesión larga.
+      // Ahora pedimos los datos reales del usuario para el estado global.
+      const { data } = await axios.get(`${API}/me`);
+      
+      queryClient.clear();
+      set({ 
+        user: data.user, 
+        isAuthenticated: true, 
+        isLoading: false 
+      });
+
+      return data.user;
+    } catch (err) {
+      set({ isLoading: false, error: null });
+      // Manejo de Rate Limit (429)
+      if (err?.response?.status === 429) {
+        toast.error(i18n.t("auth.toasts.tooManyRequests")); 
+        throw err;
+      }
+      toast.error(i18n.t("auth.toasts.googleFailed"));
       throw err;
     }
   },
