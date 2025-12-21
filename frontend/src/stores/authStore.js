@@ -7,7 +7,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import i18n from "../i18n"; 
 
 
-const API = import.meta.env.MODE === "development" ? "http://localhost:5001/api/auth" : "/api/auth";
+const API = import.meta.env.MODE === "development" ? "http://localhost:5001/api/auth" : "/auth";
 api.defaults.withCredentials = true;
 
 if (!api.__drvipsLangInterceptor) {
@@ -293,7 +293,7 @@ export const useAuthStore = create(persist((set) => ({
     const fd = new FormData();
     fd.append("avatar", file);
     try {
-      const { data } = await api.put(`${API}/profile/avatar`, fd, {
+      const { data } = await axios.put(`${API}/profile/avatar`, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       set({ user: data.user });
@@ -307,7 +307,7 @@ export const useAuthStore = create(persist((set) => ({
 
   importAvatarByUrl: async (url) => {
     try {
-      const { data } = await api.post(`${API}/profile/avatar-url`, { url });
+      const { data } = await axios.post(`${API}/profile/avatar-url`, { url });
       set({ user: data.user });
       toast.success(i18n.t("auth.toasts.photoUpdated"));
       return data.user;
