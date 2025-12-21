@@ -1,6 +1,6 @@
 // src/stores/authStore.js
 import { create } from "zustand";
-import axios from "../lib/axios.js";
+import api from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { queryClient } from "../lib/queryClient.js";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -8,12 +8,12 @@ import i18n from "../i18n";
 
 
 const API = import.meta.env.MODE === "development" ? "http://localhost:5001/api/auth" : "/api/auth";
-axios.defaults.withCredentials = true;
+api.defaults.withCredentials = true;
 
-if (!axios.__drvipsLangInterceptor) {
-  axios.__drvipsLangInterceptor = true;
+if (!api.__drvipsLangInterceptor) {
+  api.__drvipsLangInterceptor = true;
 
-  axios.interceptors.request.use((config) => {
+  api.interceptors.request.use((config) => {
     const lang = localStorage.getItem("lang") || "en";
     config.headers = config.headers || {};
     config.headers["x-lang"] = lang;
@@ -93,7 +93,7 @@ export const useAuthStore = create(persist((set) => ({
   }
     set({ isCheckingAuth: true, error: null });
     try {
-      const { data } = await axios.get(`${API}/me`);
+      const { data } = await api.get(`${API}/me`);
       set({ user: data.user, isAuthenticated: true, isCheckingAuth: false });
     } catch {
       set({ user: null, isAuthenticated: false, isCheckingAuth: false });
@@ -103,8 +103,8 @@ export const useAuthStore = create(persist((set) => ({
   login: async (email, password, recaptchaToken) => {
     set({ isLoading: true, error: null });
     try {
-      await axios.post(`${API}/login`, { email, password, recaptchaToken });
-      const { data } = await axios.get(`${API}/me`);
+      await api.post(`${API}/login`, { email, password, recaptchaToken });
+      const { data } = await api.get(`${API}/me`);
       queryClient.clear();         
       set({ user: data.user, isAuthenticated: true, isLoading: false });
       toast.success(i18n.t("auth.toasts.loginSuccess"));
@@ -128,8 +128,8 @@ export const useAuthStore = create(persist((set) => ({
   signup: async (name, email, password, recaptchaToken, role = "doctor") => {
     set({ isLoading: true, error: null });
     try {
-      await axios.post(`${API}/register`, { name, email, password, recaptchaToken, role });
-      const { data } = await axios.get(`${API}/me`);
+      await api.post(`${API}/register`, { name, email, password, recaptchaToken, role });
+      const { data } = await api.get(`${API}/me`);
       queryClient.clear();         
       set({ user: data.user, isAuthenticated: true, isLoading: false });
       toast.success(i18n.t("auth.toasts.signupSuccess"));
@@ -153,7 +153,7 @@ export const useAuthStore = create(persist((set) => ({
   },
 
   logout: async () => {
-    try { await axios.post(`${API}/logout`); } catch {}
+    try { await api.post(`${API}/logout`); } catch {}
     queryClient.clear();         
     set({ user: null, isAuthenticated: false });
     toast.success(i18n.t("auth.toasts.logout"));
@@ -162,8 +162,8 @@ export const useAuthStore = create(persist((set) => ({
   verifyEmail: async (code) => {
     set({ isLoading: true, error: null });
     try {
-      await axios.post(`${API}/verify-email`, { code });
-      const { data } = await axios.get(`${API}/me`);
+      await api.post(`${API}/verify-email`, { code });
+      const { data } = await api.get(`${API}/me`);
       set({ user: data.user, isAuthenticated: true, isLoading: false });
       toast.success(i18n.t("auth.toasts.emailVerified"));
       return true;
@@ -176,7 +176,7 @@ export const useAuthStore = create(persist((set) => ({
 
   resendCode: async () => {
     try {
-      await axios.post(`${API}/resend-code`);
+      await api.post(`${API}/resend-code`);
       toast.success(i18n.t("auth.toasts.codeResent"));
       return true;
     } catch (err) {
@@ -189,7 +189,7 @@ export const useAuthStore = create(persist((set) => ({
   forgotPassword: async (email) => {
     set({ isLoading: true, error: null });
     try {
-      const { data } = await axios.post(`${API}/forgot-password`, { email });
+      const { data } = await api.post(`${API}/forgot-password`, { email });
       set({ isLoading: false });
       toast.success(i18n.t("auth.toasts.forgotSent"));
       return data;
@@ -204,7 +204,7 @@ export const useAuthStore = create(persist((set) => ({
   verifyResetCode: async (email, code) => {
   set({ isLoading: true, error: null });
   try {
-    const { data } = await axios.post(`${API}/verify-reset-code`, { email, code });
+    const { data } = await api.post(`${API}/verify-reset-code`, { email, code });
     set({ isLoading: false });
     return data; // { success, token }
   } catch (err) {
@@ -219,7 +219,7 @@ export const useAuthStore = create(persist((set) => ({
   resetPassword: async (token, password) => {
     set({ isLoading: true, error: null });
     try {
-      const { data } = await axios.post(`${API}/reset-password/${token}`, { password });
+      const { data } = await api.post(`${API}/reset-password/${token}`, { password });
       set({ isLoading: false });
       toast.success(i18n.t("auth.toasts.passwordUpdated"));
       return data;
@@ -233,7 +233,7 @@ export const useAuthStore = create(persist((set) => ({
   // Nueva: valida captcha -> deja cookie -> redirige a Google
   googleStart: async (recaptchaToken) => {
     try{
-    await axios.post(`${API}/google/recaptcha`, { recaptchaToken });
+    await api.post(`${API}/google/recaptcha`, { recaptchaToken });
     window.location.href = `${API}/google/init`;
     } catch (err) {
       if (err?.response?.status === 429) {  rateToast(err);  throw err; }
@@ -243,16 +243,16 @@ export const useAuthStore = create(persist((set) => ({
   },
 
    // Paso intermedio: leer datos "pending" (email, foto, allowDoctor)
- /* getGooglePending: async () => {
-    const { data } = await axios.get(`${API}/google/pending`);
+  getGooglePending: async () => {
+    const { data } = await api.get(`${API}/google/pending`);
     return data; // { email, name, picture, allowDoctor }
   },
 
   // Finalizar elección de rol y quedar logueado
   finalizeGoogleRole: async (role) => {
     try {
-      await axios.post(`${API}/google/finalize`, { role });
-      const { data } = await axios.get(`${API}/me`);
+      await api.post(`${API}/google/finalize`, { role });
+      const { data } = await api.get(`${API}/me`);
       queryClient.clear();
       set({ user: data.user, isAuthenticated: true });
       return data.user;
@@ -260,52 +260,11 @@ export const useAuthStore = create(persist((set) => ({
       if (err?.response?.status === 429) { rateToast(err); throw err; }
       throw err;
     }
-  },*/
-
-  getGooglePending: async () => {
-    try {
-      // Esta ruta recupera los datos temporales (email, nombre) guardados en la cookie g_pending
-      const { data } = await axios.get(`${API}/google/pending`);
-      return data; 
-    } catch (err) {
-      // Si falla, probablemente la cookie expiró o no existe
-      throw err;
-    }
-  },
-
-  finalizeGoogleRole: async (role) => {
-    set({ isLoading: true, error: null });
-    try {
-      // Envía el rol elegido. El backend usa la cookie g_pending para saber quién es el usuario
-      await axios.post(`${API}/google/finalize`, { role });
-
-      // Si tuvo éxito, el backend ya dejó la cookie 'token' de sesión larga.
-      // Ahora pedimos los datos reales del usuario para el estado global.
-      const { data } = await axios.get(`${API}/me`);
-      
-      queryClient.clear();
-      set({ 
-        user: data.user, 
-        isAuthenticated: true, 
-        isLoading: false 
-      });
-
-      return data.user;
-    } catch (err) {
-      set({ isLoading: false, error: null });
-      // Manejo de Rate Limit (429)
-      if (err?.response?.status === 429) {
-        toast.error(i18n.t("auth.toasts.tooManyRequests")); 
-        throw err;
-      }
-      toast.error(i18n.t("auth.toasts.googleFailed"));
-      throw err;
-    }
   },
   
    updateProfile: async (payload) => {
     try {
-      const { data } = await axios.put(`${API}/profile`, payload);
+      const { data } = await api.put(`${API}/profile`, payload);
       // Actualiza el store con lo devuelto por el backend
       set({ user: data.user });
       toast.success(i18n.t("auth.toasts.profileUpdated"));
@@ -318,7 +277,7 @@ export const useAuthStore = create(persist((set) => ({
 
   deleteMe: async () => {
     try {
-      await axios.delete(`${API}/me`);
+      await api.delete(`${API}/me`);
       // Limpia estado local
       set({ user: null, isAuthenticated: false });
       toast.success(i18n.t("auth.toasts.accountDeleted"));
@@ -334,7 +293,7 @@ export const useAuthStore = create(persist((set) => ({
     const fd = new FormData();
     fd.append("avatar", file);
     try {
-      const { data } = await axios.put(`${API}/profile/avatar`, fd, {
+      const { data } = await api.put(`${API}/profile/avatar`, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       set({ user: data.user });
@@ -348,7 +307,7 @@ export const useAuthStore = create(persist((set) => ({
 
   importAvatarByUrl: async (url) => {
     try {
-      const { data } = await axios.post(`${API}/profile/avatar-url`, { url });
+      const { data } = await api.post(`${API}/profile/avatar-url`, { url });
       set({ user: data.user });
       toast.success(i18n.t("auth.toasts.photoUpdated"));
       return data.user;
