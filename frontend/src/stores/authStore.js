@@ -314,7 +314,7 @@ export const useAuthStore = create(persist((set) => ({
     const fd = new FormData();
     fd.append("avatar", file);
     try {
-      const { data } = await axios.put(`${API}/profile/avatar`, fd, {
+      const { data } = await api.put(`${API}/profile/avatar`, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       set({ user: data.user });
@@ -328,7 +328,7 @@ export const useAuthStore = create(persist((set) => ({
 
   importAvatarByUrl: async (url) => {
     try {
-      const { data } = await axios.post(`${API}/profile/avatar-url`, { url });
+      const { data } = await api.post(`${API}/profile/avatar-url`, { url });
       set({ user: data.user });
       toast.success(i18n.t("auth.toasts.photoUpdated"));
       return data.user;
