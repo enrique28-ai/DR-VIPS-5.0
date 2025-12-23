@@ -36,6 +36,14 @@ const extract = (err, fallback) => {
   const code = err?.response?.data?.errorCode;
   const backendMsg = err?.response?.data?.error;
 
+  if (backendMsg && (
+      backendMsg.includes("Invalid") || 
+      backendMsg.includes("expired") || 
+      backendMsg.includes("incorrect")
+  )) {
+    return fallback;
+  }
+
   if (!code) return backendMsg || fallback;
   return msgFromCode(code, fallback, backendMsg);
 };
