@@ -461,6 +461,29 @@ export const getMyHealthInfo = async (req, res) => {
     const snapshotData = await computeHealthSnapshotByEmail(email);
     const { hasRecords, snapshot, pats } = snapshotData;
 
+    if (snapshot && pats && pats.length > 1) {
+      const intersectOthers = (field) => {
+        // Tomamos todas las versiones EXCEPTO la más reciente (la tuya)
+        const others = pats.slice(1);
+        if (!others.length) return []; 
+        
+        // Empezamos la intersección con el primer "otro" doctor
+        let base = new Set(normalize(others[0][field]));
+        
+        // Intersectamos con el resto
+        for (let i = 1; i < others.length; i++) {
+          const current = new Set(normalize(others[i][field]));
+          base = new Set([...base].filter(x => current.has(x)));
+        }
+        return Array.from(base);
+      };
+
+      // Sobrescribimos las listas "Comunes" con este nuevo cálculo
+      snapshot.commonDiseases = intersectOthers("diseases");
+      snapshot.commonAllergies = intersectOthers("allergies");
+      snapshot.commonMedications = intersectOthers("medications");
+    }
+
     // 2) Buscar la última decisión del usuario
     const user = await User.findById(req.user._id)
       .select("lastHealthDecisionAt")
