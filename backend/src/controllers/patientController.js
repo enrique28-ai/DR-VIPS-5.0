@@ -290,6 +290,12 @@ export const updatePatient = async (req, res) => {
 
     if ("email" in req.body) {
       const e = String(req.body.email ?? "").trim().toLowerCase();
+
+      if (current.email && current.email !== e) {
+    return res.status(400).json({ 
+      error: "You can not modify the email once it is registered." 
+    });
+      }
       if (!e) {
         if (isMinorNext) {
           unset.email = 1;
