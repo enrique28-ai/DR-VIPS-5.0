@@ -336,7 +336,8 @@
     "heightWeightPositive": "Height and weight must be greater than 0.",
     "heightWeightTooHigh": "Please keep height ≤ {{maxH}} {{hUnit}} and weight ≤ {{maxW}} {{wUnit}}.",
     "causeRequired": "Please enter a cause of death.",
-    "countryRequired": "Please select a country."
+    "countryRequired": "Please select a country.",
+    "emailImmutable": "The email cannot be modified once registered."
   },
 
   "detail": {

@@ -402,7 +402,7 @@ setForm((f) => ({ ...f, phone: restPhone }));
       </main>
     );
   }
-
+  const hasExistingEmail = Boolean(patient?.email);
   return (
     <main className="mx-auto max-w-2xl p-4">
       <div className="mb-4">
@@ -428,8 +428,17 @@ setForm((f) => ({ ...f, phone: restPhone }));
           onChange={onChange}
           onBlur={onEmailBlur}
           required={!isMinor}
+          disabled={hasExistingEmail}
+    // Opcional: Estilo visual para indicar que está bloqueado
+          className={hasExistingEmail ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""}
         />
-        {!isEmailFormatValid && form.email && (
+        {hasExistingEmail && (
+        <p className="text-xs text-gray-500 mt-1">
+          {/* Puedes usar una key de traducción o texto directo */}
+            {t("patients.edit.emailImmutable")}
+          </p>
+          )}
+        {!isEmailFormatValid && form.email && !hasExistingEmail && (
           <p className="text-xs text-red-600 mt-1">{t("patients.edit.invalidEmail")}</p>
         )}
 
