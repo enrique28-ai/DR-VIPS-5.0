@@ -258,6 +258,8 @@ const hasNumericConflict = (field) => {
   const snapshot = {
     fullname: latest.fullname,
     email,
+    doctorName: latest.createdBy?.name,
+    doctorEmail: latest.createdBy?.email,
     ageCategory: latest.ageCategory,
     isDeceased: latest.isDeceased,
     causeOfDeath: latest.causeOfDeath,
@@ -332,6 +334,7 @@ const hasNumericConflict = (field) => {
 export async function computeHealthSnapshotByEmail(email) {
   const pats = await Patient.find({ email })
     .sort({ updatedAt: -1 })
+    .populate("createdBy", "name email")
     .lean();
 
   const base = buildHealthSnapshotFromPatients(pats, email);
