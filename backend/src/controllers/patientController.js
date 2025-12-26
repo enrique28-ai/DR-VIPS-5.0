@@ -718,7 +718,7 @@ export const approvePatientProfile = async (req, res) => {
 };
 
 
-export const rejectPatientProfile = async (req, res) => {
+/*export const rejectPatientProfile = async (req, res) => {
   try {
     if (req.user.role !== "patient") {
       return res.status(403).json({ error: "Insufficient role" });
@@ -892,6 +892,71 @@ if (phoneVal !== undefined) {
       snapshot: finalState.snapshot,
       pendingDecision: false,
     });
+  } catch (err) {
+    console.error("rejectPatientProfile error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};*/
+
+export const rejectPatientProfile = async (req, res) => {
+  try {
+    if (req.user.role !== "patient") {
+      return res.status(403).json({ error: "Insufficient role" });
+    }
+
+    const email = (req.user.email || "").toLowerCase().trim();
+    if (!email) {
+      return res.status(400).json({ error: "User has no email on file" });
+    }
+
+    const profileId = req.params.id;
+
+    // Buscamos todos los perfiles ordenados por fecha
+    const allPats = await Patient.find({ email }).sort({ updatedAt: -1 }).lean();
+    
+    // Buscamos el perfil específico que se está rechazando
+    const target = allPats.find((p) => String(p._id) === profileId);
+    if (!target) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+
+    // --- LÓGICA INTELIGENTE DE RECHAZO ---
+    const snap = target.approvedSnapshot;
+    const hasHistory = snap && typeof snap === "object" && snap.set;
+
+    if (hasHistory) {
+      // CASO A: TIENE HISTORIA (Edición rechazada) -> RESTAURAR
+      const prevSet = snap.set;
+      const prevUnset = snap.unset || {};
+
+      const updateDoc = { $set: prevSet };
+      if (Object.keys(prevUnset).length > 0) updateDoc.$unset = prevUnset;
+
+      await Patient.updateMany({ email }, updateDoc);
+
+    } else {
+      // CASO B: NO TIENE HISTORIA (Creación rechazada) -> BORRAR
+      await Diagnosis.deleteMany({ patient: profileId });
+      await Patient.deleteOne({ _id: profileId, email });
+    }
+
+    // Registrar decisión
+    await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: { lastHealthDecisionAt: new Date() } },
+      { new: false }
+    );
+
+    // Devolver snapshot actualizado
+    const finalState = await computeHealthSnapshotByEmail(email);
+    
+    return res.json({
+      ok: true,
+      hasRecords: finalState.hasRecords,
+      snapshot: finalState.snapshot,
+      pendingDecision: false,
+    });
+
   } catch (err) {
     console.error("rejectPatientProfile error:", err);
     return res.status(500).json({ error: "Internal server error" });

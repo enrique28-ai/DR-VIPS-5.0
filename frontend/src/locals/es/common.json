@@ -512,7 +512,8 @@
     "description": "Así es como sus médicos han registrado su información personal.",
     "allUpToDate": "Toda su información está actualizada. No hay nada pendiente por aprobar.",
     "lastUpdate": "Última solicitud de actualización:",
-    "backToState": "Volver a mis diagnósticos"
+    "backToState": "Volver a mis diagnósticos",
+    "updatedBy": "Realizado por:"
   },
   "multiDoctor": {
     "title": "Ha visitado a más de un médico.",
