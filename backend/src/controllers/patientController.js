@@ -15,6 +15,7 @@ import {
   FT_TO_M,
   LB_TO_KG,
   buildHealthSnapshotFromPatients,
+  attachDoctorInfoToSnapshot
 } from "./helpers/patienthelpers.js";
 
 /**
@@ -709,7 +710,12 @@ export const approvePatientProfile = async (req, res) => {
       { new: false }
     );
 
-    const { hasRecords, snapshot } = await computeHealthSnapshotByEmail(email);
+    //const { hasRecords, snapshot } = await computeHealthSnapshotByEmail(email);
+    const finalState = await computeHealthSnapshotByEmail(email);
+    const { hasRecords, snapshot, pats } = finalState;
+
+    // --- NUEVO: Inyectar info del doctor ---
+    await attachDoctorInfoToSnapshot(snapshot, pats);
     return res.json({ ok: true, hasRecords, snapshot, pendingDecision: false });
   } catch (err) {
     console.error("approvePatientProfile error:", err);
@@ -776,7 +782,11 @@ if (withoutTarget.length === 0) {
       { new: false }
     );
 
-    const { hasRecords, snapshot } = await computeHealthSnapshotByEmail(email);
+    const finalState = await computeHealthSnapshotByEmail(email);
+    const { hasRecords, snapshot, pats } = finalState;
+
+    // --- NUEVO: Inyectar info del doctor ---
+    await attachDoctorInfoToSnapshot(snapshot, pats);
     return res.json({ ok: true, hasRecords, snapshot, pendingDecision: false });
   }
 
@@ -886,12 +896,17 @@ if (phoneVal !== undefined) {
 
     // Devolver snapshot alineado
     const finalState = await computeHealthSnapshotByEmail(email);
-    return res.json({
+    const { hasRecords: hrFinal, snapshot: snFinal, pats: patsFinal } = finalState;
+    // --- NUEVO: Inyectar info del doctor ---
+    await attachDoctorInfoToSnapshot(snFinal, patsFinal);
+
+   /* return res.json({
       ok: true,
       hasRecords: finalState.hasRecords,
       snapshot: finalState.snapshot,
       pendingDecision: false,
-    });
+    });*/
+    return res.json({ ok: true, hasRecords: hrFinal, snapshot: snFinal, pendingDecision: false });
   } catch (err) {
     console.error("rejectPatientProfile error:", err);
     return res.status(500).json({ error: "Internal server error" });
