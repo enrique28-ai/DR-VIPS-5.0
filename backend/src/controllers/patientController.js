@@ -468,6 +468,8 @@ export const getMyHealthInfo = async (req, res) => {
     const snapshotData = await computeHealthSnapshotByEmail(email);
     const { hasRecords, snapshot, pats } = snapshotData;
 
+    await attachDoctorInfoToSnapshot(snapshot, pats);
+
     if (snapshot && pats && pats.length > 1) {
       const intersectOthers = (field) => {
         // Tomamos todas las versiones EXCEPTO la más reciente (la tuya)
