@@ -372,32 +372,3 @@ export async function hasPendingHealthDecisionForEmail(email) {
   // Si hay un Patient más nuevo que la última decisión → sigue pendiente
   return latestUpdate > lastDecision;
 }
-
-export async function attachDoctorInfoToSnapshot(snapshot, pats) {
-  if (snapshot && pats && pats.length > 0) {
-    const latestDoc = pats[0];
-
-    if (snapshot.doctorName && snapshot.doctorEmail) return;
-    
-    if (latestDoc.createdBy) {
-      let author = latestDoc.createdBy;
-      const needsFetch = !author.name || typeof author === 'string' || (author.constructor && author.constructor.name === 'ObjectId');
-
-      if (needsFetch) {
-        try {
-          // CORRECCIÓN: Quitamos 'lastname' del select
-          author = await User.findById(latestDoc.createdBy).select("name email").lean();
-        } catch (err) {
-          console.error("Error fetching doctor info in snapshot:", err);
-          author = null;
-        }
-      }
-
-      if (author) {
-        // CORRECCIÓN: Usamos solo 'name'
-        snapshot.doctorName = (author.name || "").trim();
-        snapshot.doctorEmail = author.email;
-      }
-    }
-  }
-}

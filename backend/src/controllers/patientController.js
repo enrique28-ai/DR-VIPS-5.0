@@ -15,7 +15,6 @@ import {
   FT_TO_M,
   LB_TO_KG,
   buildHealthSnapshotFromPatients,
-  attachDoctorInfoToSnapshot
 } from "./helpers/patienthelpers.js";
 
 /**
@@ -468,8 +467,6 @@ export const getMyHealthInfo = async (req, res) => {
     const snapshotData = await computeHealthSnapshotByEmail(email);
     const { hasRecords, snapshot, pats } = snapshotData;
 
-    await attachDoctorInfoToSnapshot(snapshot, pats);
-
     if (snapshot && pats && pats.length > 1) {
       const intersectOthers = (field) => {
         // Tomamos todas las versiones EXCEPTO la más reciente (la tuya)
@@ -688,7 +685,7 @@ export const approvePatientProfile = async (req, res) => {
       if (!(f in canonicalSet)) canonicalSet[f] = [];
     }
 
-    
+    const approvedAt = new Date();
     const approvedSnapshot = { set: canonicalSet, unset: canonicalUnset };
 
     const updateDoc = {
@@ -706,20 +703,13 @@ export const approvePatientProfile = async (req, res) => {
     // 3) Copiar a TODOS los docs del mismo email + guardar snapshot
     await Patient.updateMany({ email }, updateDoc);
 
-    await Patient.findByIdAndUpdate(profileId, { $set: { updatedAt: new Date() } });
-
     await User.findByIdAndUpdate(
       req.user._id,
       { $set: { lastHealthDecisionAt: new Date() } },
       { new: false }
     );
 
-    //const { hasRecords, snapshot } = await computeHealthSnapshotByEmail(email);
-    const finalState = await computeHealthSnapshotByEmail(email);
-    const { hasRecords, snapshot, pats } = finalState;
-
-    // --- NUEVO: Inyectar info del doctor ---
-    await attachDoctorInfoToSnapshot(snapshot, pats);
+    const { hasRecords, snapshot } = await computeHealthSnapshotByEmail(email);
     return res.json({ ok: true, hasRecords, snapshot, pendingDecision: false });
   } catch (err) {
     console.error("approvePatientProfile error:", err);
@@ -786,11 +776,7 @@ if (withoutTarget.length === 0) {
       { new: false }
     );
 
-    const finalState = await computeHealthSnapshotByEmail(email);
-    const { hasRecords, snapshot, pats } = finalState;
-
-    // --- NUEVO: Inyectar info del doctor ---
-    await attachDoctorInfoToSnapshot(snapshot, pats);
+    const { hasRecords, snapshot } = await computeHealthSnapshotByEmail(email);
     return res.json({ ok: true, hasRecords, snapshot, pendingDecision: false });
   }
 
@@ -900,17 +886,12 @@ if (phoneVal !== undefined) {
 
     // Devolver snapshot alineado
     const finalState = await computeHealthSnapshotByEmail(email);
-    const { hasRecords: hrFinal, snapshot: snFinal, pats: patsFinal } = finalState;
-    // --- NUEVO: Inyectar info del doctor ---
-    await attachDoctorInfoToSnapshot(snFinal, patsFinal);
-
-   /* return res.json({
+    return res.json({
       ok: true,
       hasRecords: finalState.hasRecords,
       snapshot: finalState.snapshot,
       pendingDecision: false,
-    });*/
-    return res.json({ ok: true, hasRecords: hrFinal, snapshot: snFinal, pendingDecision: false });
+    });
   } catch (err) {
     console.error("rejectPatientProfile error:", err);
     return res.status(500).json({ error: "Internal server error" });

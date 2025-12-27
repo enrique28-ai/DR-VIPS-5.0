@@ -311,8 +311,6 @@ const prevLocations =
   const phoneVal = scalarValue(snapshot.phone); 
   const fullnameWrapper = snapshot.fullnameWrapper;
   const statusWrapper = snapshot.status;
-  const doctorName = snapshot.doctorName;
-  const doctorEmail = snapshot.doctorEmail;
 
   const organDonorLabel = yesNoFromScalar(snapshot.organDonor, t);
   const bloodDonorLabel = yesNoFromScalar(snapshot.bloodDonor, t);
@@ -400,15 +398,6 @@ const prevLocations =
               </span>
             </p>
           )}
-          {(doctorName || doctorEmail) && (
-                <p className="mt-1 ml-4 border-l-2 border-slate-300 pl-2">
-                  {t("myHealthInfo.header.updatedBy")}{" "}
-                  <span className="font-medium text-slate-700">
-                    {doctorName || t("myHealthState.detail.unknownDoctor")}
-                    {doctorEmail && <span className="text-slate-400 font-normal"> ({doctorEmail})</span>}
-                  </span>
-                </p>
-              )}
         </div>
         <div className="flex gap-3">
           <Button
