@@ -258,8 +258,6 @@ const hasNumericConflict = (field) => {
   const snapshot = {
     fullname: latest.fullname,
     email,
-    doctorName: latest.createdBy?.name,
-    doctorEmail: latest.createdBy?.email,
     ageCategory: latest.ageCategory,
     isDeceased: latest.isDeceased,
     causeOfDeath: latest.causeOfDeath,

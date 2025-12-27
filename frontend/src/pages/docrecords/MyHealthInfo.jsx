@@ -311,6 +311,7 @@ const prevLocations =
   const phoneVal = scalarValue(snapshot.phone); 
   const fullnameWrapper = snapshot.fullnameWrapper;
   const statusWrapper = snapshot.status;
+  
 
   const organDonorLabel = yesNoFromScalar(snapshot.organDonor, t);
   const bloodDonorLabel = yesNoFromScalar(snapshot.bloodDonor, t);
