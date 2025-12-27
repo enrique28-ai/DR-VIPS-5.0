@@ -706,6 +706,8 @@ export const approvePatientProfile = async (req, res) => {
     // 3) Copiar a TODOS los docs del mismo email + guardar snapshot
     await Patient.updateMany({ email }, updateDoc);
 
+    await Patient.findByIdAndUpdate(profileId, { $set: { updatedAt: new Date() } });
+
     await User.findByIdAndUpdate(
       req.user._id,
       { $set: { lastHealthDecisionAt: new Date() } },
