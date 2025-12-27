@@ -688,7 +688,8 @@ export const approvePatientProfile = async (req, res) => {
       if (!(f in canonicalSet)) canonicalSet[f] = [];
     }
 
-    const approvedAt = new Date();
+    const now = new Date();
+    const slightlyPast = new Date(now.getTime() - 2000);
     const approvedSnapshot = { set: canonicalSet, unset: canonicalUnset };
 
     const updateDoc = {
@@ -696,6 +697,7 @@ export const approvePatientProfile = async (req, res) => {
         ...canonicalSet,
         approvedSnapshot,
         approvedAt,
+        updatedAt: slightlyPast,
       },
     };
 
@@ -706,7 +708,7 @@ export const approvePatientProfile = async (req, res) => {
     // 3) Copiar a TODOS los docs del mismo email + guardar snapshot
     await Patient.updateMany({ email }, updateDoc);
 
-    await Patient.findByIdAndUpdate(profileId, { $set: { updatedAt: new Date() } });
+    await Patient.findByIdAndUpdate(profileId, { $set: { updatedAt: now } });
 
     await User.findByIdAndUpdate(
       req.user._id,
@@ -888,8 +890,23 @@ if (phoneVal !== undefined) {
     canonical.allergies = Array.isArray(snapshot.allergies) ? snapshot.allergies : [];
     canonical.medications = Array.isArray(snapshot.medications) ? snapshot.medications : [];
 
+    const now = new Date();
+    const slightlyPast = new Date(now.getTime() - 2000);
+
+    const updateDoc = { $set: canonical };
+    if (canonical.isDeceased === false) {
+      updateDoc.$unset = { causeOfDeath: 1 };
+    }
+
+    updateDoc.$set.updatedAt = slightlyPast;
+
     // Copiar "estado anterior" a TODOS los Patient con ese email
-    await Patient.updateMany({ email }, { $set: canonical });
+    //await Patient.updateMany({ email }, { $set: canonical });
+    await Patient.updateMany({ email }, updateDoc);
+
+    if (withoutTarget && withoutTarget.length > 0) {
+      await Patient.findByIdAndUpdate(withoutTarget[0]._id, { $set: { updatedAt: now } });
+    }
 
     // Registrar decisión del paciente
     await User.findByIdAndUpdate(
