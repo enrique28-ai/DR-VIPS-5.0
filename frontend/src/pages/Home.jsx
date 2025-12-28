@@ -95,7 +95,11 @@ export default function Home() {
           <div className="flex-1 w-full">
             <div className="aspect-[4/3] w-full rounded-2xl border border-dashed border-gray-300 grid place-items-center">
               <div className="text-gray-500 text-center px-6">
-                <div className="text-5xl mb-2">🩺</div>
+                <div className="relative w-48 md:w-48"><img 
+              src="/dr-vips-logo.png" 
+              alt="DR-VIPS Logo" 
+              className="relative z-10 w-full h-auto drop-shadow-2xl transform hover:scale-105 transition-duration-500 ease-in-out"
+            /></div>
                 <div className="font-medium">
                   {t("home.workspace.title")}
                 </div>

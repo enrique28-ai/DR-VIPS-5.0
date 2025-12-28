@@ -34,13 +34,11 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand */}
         <Link to="/" className="flex items-center gap-2">
-          <span
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg
-                       bg-blue-600 text-white shadow-sm"
-            aria-label="DR-VIPS Home"
-          >
-            <Stethoscope className="h-5 w-5" />    {/* 👈 estetoscopio */}
-          </span>
+          <img 
+            src="/dr-vips-logo.png" 
+            alt="Dr-VIPS Logo" 
+            className="h-14 w-auto"
+          />
           <span className="text-lg font-semibold tracking-tight text-gray-900">
             DR-VIPS
           </span>
