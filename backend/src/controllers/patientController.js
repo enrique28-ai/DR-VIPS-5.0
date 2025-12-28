@@ -467,6 +467,24 @@ export const getMyHealthInfo = async (req, res) => {
     const snapshotData = await computeHealthSnapshotByEmail(email);
     const { hasRecords, snapshot, pats } = snapshotData;
 
+    if (pats && pats.length > 0) {
+      // Poblamos el campo createdBy para obtener name y email del doctor
+      await Patient.populate(pats, { path: "createdBy", select: "name email" });
+
+      // Asumimos que snapshot.sources se corresponde en orden con pats 
+      // (ambos ordenados por fecha descendente en computeHealthSnapshotByEmail)
+      if (snapshot && snapshot.sources && Array.isArray(snapshot.sources)) {
+        snapshot.sources.forEach((source, index) => {
+          const p = pats[index];
+          if (p && p.createdBy) {
+            // Inyectamos datos del doctor en el objeto source
+            source.doctorName = p.createdBy.name; 
+            source.doctorEmail = p.createdBy.email;
+          }
+        });
+      }
+    }
+
     if (snapshot && pats && pats.length > 1) {
       const intersectOthers = (field) => {
         // Tomamos todas las versiones EXCEPTO la más reciente (la tuya)

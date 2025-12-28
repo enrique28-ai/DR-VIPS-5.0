@@ -6,6 +6,8 @@ import {
   Droplets,
   AlertTriangle,
   Info,
+  Mail, // <--- Importa esto de lucide-react si quieres el icono
+  Stethoscope
 } from "lucide-react";
 import Button from "../../components/forms/Button.jsx";
 import {
@@ -398,6 +400,37 @@ const prevLocations =
                 )}
               </span>
             </p>
+            
+          )}
+          {pendingDecision && (
+                <>
+                  {/* Separador visual */}
+                  <div className="hidden h-3 w-px bg-slate-300 sm:block"></div>
+
+                  {latestSource.doctorName && (
+                    <div className="flex items-center gap-1.5">
+                      <User2 className="h-3.5 w-3.5 text-slate-400" />
+                      <span>
+                        Doctor:{" "}
+                        <span className="font-medium text-slate-900">
+                          {latestSource.doctorName}
+                        </span>
+                      </span>
+                    </div>
+                  )}
+
+                  {latestSource.doctorEmail && (
+                    <div className="flex items-center gap-1.5">
+                      <Mail className="h-3.5 w-3.5 text-slate-400" />
+                      <span>
+                        Email:{" "}
+                        <span className="font-medium text-slate-900">
+                          {latestSource.doctorEmail}
+                        </span>
+                      </span>
+                    </div>
+                  )}
+                 </>
           )}
         </div>
         <div className="flex gap-3">
