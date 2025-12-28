@@ -528,7 +528,9 @@
     "allUpToDate": "All your information is up to date. There is nothing pending to approve.",
     "lastUpdate": "Last update request:",
     "backToState": "Back to my diagnoses",
-    "updatedBy": "Performed by:"
+    "updatedBy": "Performed by:",
+    "doctor": "Doctor",
+    "email": "Email"
   },
   "multiDoctor": {
     "title": "You've visited more than one doctor.",

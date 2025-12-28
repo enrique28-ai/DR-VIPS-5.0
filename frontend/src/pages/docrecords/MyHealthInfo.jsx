@@ -411,7 +411,7 @@ const prevLocations =
                     <div className="flex items-center gap-1.5">
                       <User2 className="h-3.5 w-3.5 text-slate-400" />
                       <span>
-                        Doctor:{" "}
+                         {t("myHealthInfo.header.doctor")}:{" "}
                         <span className="font-medium text-slate-900">
                           {latestSource.doctorName}
                         </span>
@@ -423,7 +423,7 @@ const prevLocations =
                     <div className="flex items-center gap-1.5">
                       <Mail className="h-3.5 w-3.5 text-slate-400" />
                       <span>
-                        Email:{" "}
+                        {t("myHealthInfo.header.email")}:{" "}
                         <span className="font-medium text-slate-900">
                           {latestSource.doctorEmail}
                         </span>

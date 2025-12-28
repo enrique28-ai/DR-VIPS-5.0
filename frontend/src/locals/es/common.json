@@ -513,7 +513,9 @@
     "allUpToDate": "Toda su información está actualizada. No hay nada pendiente por aprobar.",
     "lastUpdate": "Última solicitud de actualización:",
     "backToState": "Volver a mis diagnósticos",
-    "updatedBy": "Realizado por:"
+    "updatedBy": "Realizado por:",
+    "doctor": "Doctor",
+    "email": "Correo"
   },
   "multiDoctor": {
     "title": "Ha visitado a más de un médico.",
